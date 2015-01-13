@@ -44,7 +44,7 @@ int main()
                    0.5,100
                    );
     glMatrixMode(GL_MODELVIEW);
-    gluLookAt(2,2,2,0,0,0,0,1,0);
+    gluLookAt(3,3,3,0,0,0,0,2,0); //move camera
     glEnable(GL_DEPTH_TEST);
     bool quit=false;
     SDL_Event event;
@@ -79,7 +79,7 @@ void drawTriangle()
 {
     static int rot=0;
     glPushMatrix();
-        glRotated(++rot, 0,1,0);
+        glRotated(++rot, 0,1,0); //camera pivot axis
         glBegin(GL_TRIANGLES);
             glColor3f(1.0f,0.0,0.0f);
             glVertex3f(0.0f,1.0f,0.0f);
@@ -97,25 +97,36 @@ void drawCube()
     glPushMatrix();
         glRotated(++rot, 0,1,0);
         glBegin(GL_QUADS);
-            glColor3f(1.0,0.0,0.0);
+            //          X  Y  Z
+            glColor3f(1.0,0.0,0.0); //red
             glVertex3f(-1,-1,1);
             glVertex3f(-1,1,1);
             glVertex3f(1,1,1);
             glVertex3f(1,-1,1);
-            glColor3f(0.0,1.0,0.0);
+            glColor3f(0.0,1.0,0.0); //green
             glVertex3f(-1,-1,-1);
             glVertex3f(-1,1,-1);
             glVertex3f(1,1,-1);
             glVertex3f(1,-1,-1);
-            glColor3f(0.0,0.0,1.0);
+            glColor3f(0.0,0.0,1.0); //blue
             glVertex3f(1,-1,1);
             glVertex3f(1,1,1);
             glVertex3f(1,1,-1);
             glVertex3f(1,-1,-1);
-            glColor3f(0.0,1.0,1.0);
+            glColor3f(0.0,1.0,1.0); //cyan
             glVertex3f(-1,-1,1);
             glVertex3f(-1,1,1);
             glVertex3f(-1,1,-1);
+            glVertex3f(-1,-1,-1);
+            glColor3f(1.0,1.0,0.0); //yellow
+            glVertex3f(-1,1,1);
+            glVertex3f(1,1,1);
+            glVertex3f(1,1,-1);
+            glVertex3f(-1,1,-1);
+            glColor3f(1.0,0.0,1.0); //purple
+            glVertex3f(-1,-1,1);
+            glVertex3f(1,-1,1);
+            glVertex3f(1,-1,-1);
             glVertex3f(-1,-1,-1);
         glEnd();
     glPopMatrix();
