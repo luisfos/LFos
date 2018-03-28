@@ -1,5 +1,7 @@
-#Intro to OpenGL
+#Houdini Preferences
 
-this is being used to show using SDL and OpenGL
+This repository holds my houdini setup.
 
-test
+#TODO
+Implement shelf tools for git pull/commit/push
+Implement publishing in correct structure for this repository directly from houdini
