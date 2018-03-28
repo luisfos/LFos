@@ -1,4 +1,2 @@
-*.o
-*.pro.user*
-Makefile
+*_bac*.hda
 *~
