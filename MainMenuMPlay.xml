@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mainMenu>
+  <menuBar>
+    <subMenu id="pipeblaster_menu">
+    <label>Pipeblaster</label>
+      <scriptItem id="pb.run">
+        <label>Export</label>
+        <scriptCode><!--<![CDATA[import hou
+          hou.ui.displayMessage("am i alive?")]]>--><![CDATA[echo "please show in textport"]]></scriptCode>
+      </scriptItem>
+    </subMenu>
+  </menuBar>
+</mainMenu>
