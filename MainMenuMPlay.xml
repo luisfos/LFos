@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mainMenu>
+  <menuBar>
+    <subMenu id="my_submenu">
+      <label>HEY BOI</label>
+
+      <scriptItem>
+        <label>I</label>
+        <scriptPath>$HOME/scripts/first_script.py</scriptPath>
+      </scriptItem>
+
+      <titleItem>
+        <label>AM</label>
+      </titleItem>
+
+      <scriptItem id="h.second_item">
+        <label>A</label>
+        <scriptPath>$HOME/scripts/generic_script.py</scriptPath>
+        <scriptArgs>-q -n camera</scriptArgs>
+      </scriptItem>
+
+      <separatorItem/>
+
+      <scriptItem id="h.third_item">
+        <label>MENU!!!</label>
+        <scriptPath>$HOME/scripts/generic_script.py</scriptPath>
+        <scriptArgs>-q -n light</scriptArgs>
+      </scriptItem>
+    </subMenu>
+  </menuBar>
+</mainMenu>
+
