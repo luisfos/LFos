@@ -3,6 +3,13 @@
 
 // to pass by reference, use the export flag
 
+// one dimensional gaussian (or normal or bell) distribution
+float gaussian( float height; float centre; float range; float x )
+{
+        float o = x - centre;
+        return height * exp( - o * o  / ( 0.1 * range * range ) );
+}
+
 float smoothstep(float min; float max; float x)
 {
     if( x < min ){
