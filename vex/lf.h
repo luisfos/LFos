@@ -55,7 +55,7 @@ function float gain(float x; float amount)
 function string[] make_unique(string my_array[]){
     string unique[];
     foreach (string attr; my_array){
-        if (find(unique,attr)==-1){
+        if (find(unique,attr)<0){
             append(unique, attr);
         }
     }
