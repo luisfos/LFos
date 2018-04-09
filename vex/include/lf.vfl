@@ -62,5 +62,67 @@ function string[] make_unique(string my_array[]){
     return unique;
 }
 
+void swap ( int array [ ]; int left; int right )
+{
+    int temp = array [ right ];
+    array [ right ] = array [ left ];
+    array [ left ] = temp;
+}
+
+void quickSort ( int array [ ] )
+{
+    int stack [ ];
+    int pivot;
+    int pivotIndex = 0;
+    int leftIndex = pivotIndex + 1;
+    int rightIndex = arraylength ( array ) - 1;
+    
+    push ( stack, pivotIndex );
+    push ( stack, rightIndex );
+    
+    int leftIndexOfSubSet, rightIndexOfSubset;
+    while ( arraylength ( stack ) > 0 )
+    {
+        pop ( rightIndexOfSubset, stack );
+        pop ( leftIndexOfSubSet, stack );
+        
+        leftIndex = leftIndexOfSubSet + 1;
+        pivotIndex = leftIndexOfSubSet;
+        rightIndex = rightIndexOfSubset;
+        
+        pivot = array [ pivotIndex ];
+        
+        if ( leftIndex > rightIndex )
+            continue;
+        
+        while ( leftIndex < rightIndex )
+        {
+            while ( leftIndex <= rightIndex && array [ leftIndex ] <= pivot )
+                leftIndex++;
+            
+            while ( leftIndex <= rightIndex && array [ rightIndex ] >= pivot )
+                rightIndex--;
+            
+            if ( rightIndex >= leftIndex )
+                swap ( array, leftIndex, rightIndex );
+        }
+        
+        if ( pivotIndex <= rightIndex )
+            if ( array [ pivotIndex ] > array [ rightIndex ] )
+                swap ( array, pivotIndex, rightIndex );
+        
+        if ( leftIndexOfSubSet < rightIndex )
+        {
+            push ( stack, leftIndexOfSubSet );
+            push ( stack, rightIndex - 1 );
+        }
+        
+        if ( rightIndexOfSubset > rightIndex )
+        {
+            push ( stack, rightIndex + 1 );
+            push ( stack, rightIndexOfSubset );
+        }
+    }
+}
 
 #endif
