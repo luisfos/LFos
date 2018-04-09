@@ -62,6 +62,26 @@ function string[] make_unique(string my_array[]){
     return unique;
 }
 
+// remove a list from another list
+function string [] removeValues(string arr[]; string remove[])
+{
+    string keep[];
+    foreach(int idx; string arrVal; arr){
+        int found = 0;
+        foreach(string del; remove){
+            if (match(del, arrVal)==1){
+                found=1;                
+            }        
+        }
+        if (found==0){
+            push(keep, arrVal);
+        }
+            
+    }   
+    return keep;
+}
+
+
 void swap ( int array [ ]; int left; int right )
 {
     int temp = array [ right ];
