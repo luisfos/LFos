@@ -80,7 +80,20 @@ function string [] removeValues(string arr[]; string remove[])
     }   
     return keep;
 }
-
+// list must be sorted
+function int[] removeDuplicates(int arr[]){
+    int unique[];
+    for(int i=0; i<len(arr)-1; i++){
+        int curr = arr[i];
+        int next = arr[i+1];
+        //printf("curr=%i, next=%i \n", curr, next);
+        if (curr != next){            
+            push(unique, curr);            
+        }    
+    }
+    push(unique, arr[-1]);
+    return unique;
+}
 
 void swap ( int array [ ]; int left; int right )
 {
