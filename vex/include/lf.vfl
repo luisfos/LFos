@@ -158,4 +158,26 @@ void quickSort ( int array [ ] )
     }
 }
 
+function string [] matchInArray(string array[]; string toMatch[])
+{
+    string matches[];
+    foreach(int idx; string arrVal; array)
+    {
+        int found = 0;
+        foreach(string pattern; toMatch)
+        {
+            if (match(pattern, arrVal)==1){
+                found=1;
+                break;
+            }        
+        }
+        if (found==1){
+            push(matches, arrVal);
+        }
+            
+    }   
+    return matches;
+}
+
+
 #endif
