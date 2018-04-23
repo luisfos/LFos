@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shelfDocument>
+  <!-- This file contains definitions of shelves, toolbars, and tools.
+ It should not be hand-edited when it is being used by the application.
+ Note, that two definitions of the same element are not allowed in
+ a single file. -->
+
+  <tool name="escapeDop" label="Make Escape" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[
+'''
+    dopWrapper.py
+    
+    Creates a wrapper around houdini dopnets for use in escape licenses
+
+    Draft:
+    user selects dopnet
+    creates subnet
+    |orig dopnet|   |dop copy|
+     
+    for each node in dopnet
+    create corresponding null in copy net 
+
+    TODO
+    - Handle promoting multiparminstances (ramps)
+    - understand multiparms
+    - channel referencing to expressions and evaluating after reference (see popobject createframe)
+        eval(chsraw("../../mirror/popobject/createframe")) -- works so far
+    - store data inside WRAPPER to enable the dopnet to refresh itself
+
+    - add functions for embedding dopnet into subnet
+    - add cleanup functions to de-embed / resolve parameters
+
+    @author: Luis Fos
+
+'''
+ 
+import hou
+
+
+###################################
+'''
+INPUTS
+'''
+###################################
+ 
+
+
+sel_orig = hou.selectedNodes()[0]
+if sel_orig.childTypeCategory() != hou.nodeTypeCategories()['Dop']:
+    raise hou.OperationFailed("Selected node is not DOP type")
+    quit()
+
+ 
+###################################
+'''
+FUNCTIONS
+'''
+###################################
+ 
+ 
+def create_null(source, target_container):
+    '''
+    Creates subnet inside target_container with name of source
+    '''
+
+    new_null = target_container.createNode("subnet", source.name())
+    new_null.setPosition(source.position())
+    new_null.original = source
+    for parm in new_null.parms():
+        parm.hide(True)
+    #new_null.setUserData("original", source)
+    return new_null
+
+def copy_parameters(source, target, parm_filter=None):
+    '''
+    Copies parameter values between source and target parameters given they have the same names
+
+    '''
+
+    all_parameters = source.parms()
+
+    if parm_filter != None:
+        all_parameters = [parm for parm in all_parameters if parm_filter in parm.name()]
+
+    for parm in all_parameters: 
+        parm_name = parm.name()
+        tgt = target.parm(parm_name)
+        if tgt == None:
+            continue
+        # if parm has a expression (keyframes) then copy them over
+        if len(parm.keyframes()) > 0:
+            # clear any of my keyframes
+            #print "KEYFRAME COPY"
+            tgt.deleteAllKeyframes()
+            tgt.setKeyframes(parm.keyframes())
+        else:
+        # otherwise if they have non keyframe values just copy them over
+            #print "STRING COPY"
+            val = parm.eval()
+            if(type(val)==str):
+                val = parm.unexpandedString()
+            tgt.set(val)   
+
+
+def copy_interface(source, target):
+    '''
+    copies interface from one node to another using hacky parameterTemplateGroup asCode()
+
+    TODO:
+    transfer CURRENT values not DEFAULTs
+    transfer over "horizontally join to next parameter"
+    '''
+
+    # hi-jacks houdini asCode() local variables (hou_node & hou_parm_template_group)   
+    hou_node = target
+    otlParmTemplateAsCode = source.parmTemplateGroup().asCode()
+    
+    # creates the parmTemplateGroup object (hou_parm_template_group) for the node's layout    
+    exec otlParmTemplateAsCode
+   
+    #apply the parmTemplateGroup object to the node (they are not live objects - you are modifying a copy and must reset it) 
+    target.setParmTemplateGroup(hou_parm_template_group, False)   
+    del hou_parm_template_group
+
+    #________________________________
+    # HIDE SPARE & STANDARD FOLDER
+    #________________________________
+   
+    group = target.parmTemplateGroup()
+    folder= group.findFolder("Standard")
+    folder_copy = folder.clone()
+    if folder != None:
+        folder.hide(True)
+   
+    group.replace(folder_copy, folder)
+   
+    folder= group.findFolder("Spare")
+    folder_copy = folder.clone()
+    if folder != None:
+        folder.setFolderType(hou.folderType.ImportBlock)
+       
+    group.replace(folder_copy, folder)
+       
+    target.setParmTemplateGroup(group, True) 
+ 
+ 
+def link_parameters(source, target, failsafe=False): 
+    '''
+    Links the source parameters to the target (SOURCE will have a REFERENCE)
+
+
+    for H16.5 update to parm.rawValue()
+
+    need to handle multiparms
+    '''
+
+    all_parameters = source.parms()
+
+
+    print ('before filter:   ', all_parameters)
+    all_parameters = [parm for parm in all_parameters if not parm.isMultiParmInstance()]
+
+
+    print ('after filter:   ', all_parameters)
+    #all_parameters = for
+    for s_parm in all_parameters: 
+
+        # failsafe comparison
+        print "iterating node {}, parameter {}".format(source.name(), s_parm.name())
+        orig_val = None
+        if failsafe:
+            orig_val = s_parm.eval()    
+            orig_string = s_parm.eval()
+            print 'evaluated normally'
+            if(type(orig_string)==str):
+                print 'type is string, unexpanding string'
+                orig_string = s_parm.unexpandedString()       
+
+
+        print 'begin linking'
+        source_name = s_parm.name()
+        t_parm = target.parm(source_name)       
+        s_parm.set(t_parm)
+        print 'end linking'
+
+        ''' compare end results to see if parameters dont match up '''
+        if failsafe==True: 
+            end_val = s_parm.eval()        
+            if (orig_val != end_val):
+                print "node {}, parameter {} results not matching".format(source.name(), s_parm.name())                
+                if(type(t_parm.eval())==str):
+                    # parameter accepts string expressions                    
+                    s_parm.deleteAllKeyframes()
+                    s_parm.set(orig_string)
+                else:
+                    # parameter only accepts keyframes
+                    s_parm.setKeyframes(t_parm.keyframes())
+
+
+def collapseSingleNodeIntoSubnet(node, subnet_name=None):
+    return node.parent().collapseIntoSubnet((node,), subnet_name=subnet_name)
+
+
+def resolveParameters(node, parm_filter=None):
+    '''
+    Resolves a channel reference to its value
+
+    '''
+
+    all_parameters = node.parms()
+
+    if parm_filter != None:
+        all_parameters = [parm for parm in all_parameters if parm_filter in parm.name()]
+
+    for parm in all_parameters:    
+        # can check if has expression with keyframes (or expression but then you have to catch errors)
+        if len(parm.keyframes()) > 0:
+            expression = parm.expression()
+            #print "previous expression %s" % expression
+            # find path by finding strings starting with "
+            expression_split = expression.split('"')
+            
+            path = expression_split[1]
+            print path
+            link_parm = node.parm(path)
+
+            # only resolve parm if is another expression
+            if len(link_parm.keyframes())>0:        
+                new_expression = link_parm.expression()
+                print new_expression        
+                parm.deleteAllKeyframes()        
+                parm.setExpression(new_expression)
+            else:
+                new_value = link_parm.eval()
+                parm.deleteAllKeyframes()        
+                parm.set(new_value)
+
+
+        
+###################################
+'''
+LOGIC
+'''
+###################################
+
+
+'''
+PREPARE STRUCTURE
+'''
+
+# list of pairs [original, mirror]
+pairs = []
+
+n_dopnet = None
+lookup = sel_orig.name()
+
+n_wrapper = collapseSingleNodeIntoSubnet(sel_orig, sel_orig.name()+'_WRAP')
+n_dopnet = n_wrapper.node("./{}".format(lookup))
+n_mirror = n_wrapper.createNode("subnet", "mirror")
+
+n_wrapper_out = n_wrapper.createNode("output")
+n_wrapper_out.setInput(0, n_dopnet)
+
+copy_interface(n_dopnet, n_mirror)
+copy_parameters(n_dopnet, n_mirror)
+
+
+
+'''
+CREATE NODES
+'''
+ 
+# first create nodes with parameters
+for node in n_dopnet.children():
+    
+    # temp node
+    #node = hou.node('/obj/geo1/dop_container/popnet/popobject')
+
+    new = create_null(node, n_mirror)    
+    pairs.append([node, new])
+   
+    copy_interface(node, new) 
+    copy_parameters(node, new) 
+   
+    # link parameters of node to new
+    link_parameters(node, new, failsafe=True)
+   
+    
+#link_parameters(n_dopnet, n_mirror)
+
+
+
+'''
+CONNECT NODES
+'''
+ 
+ 
+# now connect up nodes
+for pair in pairs:
+    orig= pair[0]
+    new = pair[1]
+    print "\nCurrent node: %s" % new.name()
+    print "Original: %s" % orig.path()
+    orig_inputs = orig.inputs()
+    print "Original Inputs:", orig_inputs
+   
+    for idx, input in enumerate(orig.inputs()):
+        if input != None:
+            print "Index: %i" % idx
+            print "Input: ", input
+            to_connect = new.node("../{}".format(input.name()))
+            new.setInput(idx, to_connect)]]></script>
+  </tool>
+
+  <tool name="dopwrap" label="Dopwrap" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[from paramwrap import dopwrap
+dopwrap.main()]]></script>
+  </tool>
+</shelfDocument>
