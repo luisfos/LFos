@@ -51,6 +51,16 @@ function float gain(float x; float amount)
     }
 }
 
+// overload slerp function to allow slerping between vectors
+function vector slerp(vector v1; vector v2; float bias)
+{
+	vector ref = {0,1,0};
+	vector4 q1 = dihedral(ref, v1);
+	vector4 q2 = dihedral(ref, v2);
+	vector4 rot = slerp(q1, q2, bias);
+	return qrotate(rot, ref);
+}
+
 // makes a unique array of strings (extend to other types)
 function string[] make_unique(string my_array[]){
     string unique[];
@@ -181,3 +191,4 @@ function string [] matchInArray(string array[]; string toMatch[])
 
 
 #endif
+
