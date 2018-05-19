@@ -4,13 +4,21 @@
 // to pass by reference, use the export flag
 
 // one dimensional gaussian (or normal or bell) distribution
-function float gaussian( float height; float centre; float range; float x )
+function float gaussian( float x; float height; float centre; float range )
 {
         float o = x - centre;
         return height * exp( - o * o  / ( 0.1 * range * range ) );
 }
 
-function float smoothstep(float min; float max; float x)
+// quick gaussian with default height=1 centre=0.5 range=0.5
+function float gaussian( float x )
+{
+	float o = x - 0.5;
+    return exp( - o * o  / ( 0.1 * 0.5 * 0.5 ) );
+}
+
+// standard smoothstep function
+function float smoothstep(float x; float min; float max)
 {
     if( x < min ){
         return 0;
@@ -22,11 +30,54 @@ function float smoothstep(float min; float max; float x)
     x = (x-min) / (max-min);
     return (x*x) * (3-2*x);
 }
-
-function float smoothstep2( float min; float max; float x)
+// with defaults of range 0-1
+function float smoothstep(float x)
 {
+    if( x < 0 ){
+        return 0;
+    }
+    if( x >= 1 ){
+        return 1;
+    }    
+    return (x*x) * (3-2*x);
+}
+
+// more accurate smoothstep
+function float smoothstep2( float x; float min; float max )
+{
+	if( x < min ){
+        return 0;
+    }
+    if( x >= max ){
+        return 1;
+    }   
+    x = (x-min) / (max-min);
     float r2 = x * x;
     return r2 * x * ( 6*r2 - 15*x + 10 );
+}
+
+// more accurate smoothstep default 0-1
+function float smoothstep2(float x)
+{
+	if( x < 0 ){
+        return 0;
+    }
+    if( x >= 1 ){
+        return 1;
+    }
+    float r2 = x * x;
+    return r2 * x * ( 6*r2 - 15*x + 10 );
+}
+
+// ease in default range 0-1
+function float smoothin( float x )
+{
+	return x*x*(2-x);
+}
+// ease out default range 0-1
+function float smoothout( float x )
+{
+	return x*(1+x*(1-x));
 }
 
 function float bias(float value; float amount)
@@ -49,6 +100,12 @@ function float gain(float x; float amount)
     if( x >= 0.5){
         return 1 - bias(2*(1-x), amount) * 0.5;
     }
+    return 0;
+}
+
+function float approach(float x; float to; float slow)
+{
+	return ((x * (slow - 1)) + to) / slow;
 }
 
 // overload slerp function to allow slerping between vectors
