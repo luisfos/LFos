@@ -62,6 +62,7 @@ def listVersions(node):
 
 
 def normpath(path):
+    ''' same as os.path.normpath but keeps slashes on windows same as linux'''
     path = os.path.normpath(path)
     path = path.replace("\\", "/")
     return path
