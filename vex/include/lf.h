@@ -246,6 +246,33 @@ function string [] matchInArray(string array[]; string toMatch[])
     return matches;
 }
 
+function float hedgelength(int input; int hedge){
+    vector p1 = point(input, "P", hedge_srcpoint(input, hedge));
+    vector p2 = point(input, "P", hedge_dstpoint(input, hedge));
+    return distance(p1, p2);
+}
+
+function float hedgelength2(int input; int hedge){
+    vector p1 = point(input, "P", hedge_srcpoint(input, hedge));
+    vector p2 = point(input, "P", hedge_dstpoint(input, hedge));
+    return distance2(p1, p2);
+}
+
+function float vertexangle(int input; int linearvertex){
+    int h1 = vertexhedge(input, linearvertex);
+    int h2 = hedge_prev(input, h1);
+    int h3 = hedge_next(input, h1);
+    
+    float a1, a2, a3;
+    float s1, s2, s3;
+    
+    s1 = hedgelength(0, h3);
+    s2 = hedgelength(0, h2);
+    s3 = hedgelength(0, h1);
+    
+    float c = (s2*s2 + s3*s3 - s1*s1) / (2 * s2 * s3);
+    return acos(c);
+}
 
 #endif
 

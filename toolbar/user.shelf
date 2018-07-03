@@ -316,4 +316,10 @@ for pair in pairs:
     <script scriptType="python"><![CDATA[from paramwrap import dopwrap
 dopwrap.main()]]></script>
   </tool>
+
+  <toolshelf name="custom" label="Custom">
+    <memberTool name="escapeDop"/>
+    <memberTool name="dopwrap"/>
+    <memberTool name="tool_2"/>
+  </toolshelf>
 </shelfDocument>
