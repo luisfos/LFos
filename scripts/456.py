@@ -8,7 +8,6 @@ use hou.hscript(setenv VAR = VALUE) instead
 
 '''
 
-
 import os
 import hou
 
@@ -31,7 +30,7 @@ def normpath(path):
 def isCorrect(variable):	
 	if os.path.isdir(JOB) == False:
 		return False
-	if JOB == "C:/Users/Luis":
+	if JOB == DEFAULT:
 		print 'JOB is default'
 		return False
 	find = ["/","\\"]
@@ -41,10 +40,12 @@ def isCorrect(variable):
 	if JOB != normpath(JOB):
 		print 'JOB is not equal to normpath(JOB)'
 		return False
+	return True
 
 
 #print(JOB, HIP, PROJ)
 
+# only check HIPs that are in Project folder
 if PROJ in HIP:
 	#print 'yes proj in hip'
 	if isCorrect(JOB) == False:	
@@ -54,18 +55,16 @@ if PROJ in HIP:
 			idx = HIP.rfind(find)
 			if idx > -1:			
 				JOB = HIP[0:idx+len(find)]
-				JOB = normpath(JOB)		
+				JOB = normpath(JOB)
 			else:
 				# go up one level			
 				JOB = os.path.dirname(HIP)
 				JOB = normpath(JOB)
 				print JOB
-				#hou.putenv("JOB", JOB)
 
 			print 'JOB variable modified'
-			print 'from %s -> %s' % [hou.getenv("JOB"), JOB]
+			print 'from %s -> %s' % (hou.getenv("JOB"), JOB)
 			hou.hscript("setenv JOB = %s" % JOB)
-
 	
 
 
