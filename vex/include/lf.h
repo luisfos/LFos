@@ -109,9 +109,12 @@ function float approach(float x; float to; float slow)
 }
 
 // overload slerp function to allow slerping between vectors
-function vector slerp(vector v1; vector v2; float bias)
+function vector vlerp(vector v1; vector v2; float bias)
 {
 	vector ref = {0,1,0};
+    if (dot(ref, v1) > 0.9){
+        ref = {1,0,0};
+    }
 	vector4 q1 = dihedral(ref, v1);
 	vector4 q2 = dihedral(ref, v2);
 	vector4 rot = slerp(q1, q2, bias);
@@ -272,6 +275,39 @@ function float vertexangle(int input; int linearvertex){
     
     float c = (s2*s2 + s3*s3 - s1*s1) / (2 * s2 * s3);
     return acos(c);
+}
+
+// copy attrib between points
+function void copyattrib(int input; int srcpt; int dstpt){
+    string attrs[] = detailintrinsic(0, 'pointattributes');
+    foreach( string attr; attrs){
+        if ( attr == 'P' ){
+            continue;
+        }    
+        int type = pointattribtype(0, attr);
+        if (type == 1){
+            int size = pointattribsize(0, attr);
+            if ( size == 1 ) {
+                float val = float(point(0, attr, srcpt));
+                setpointattrib(0, attr, dstpt, val);
+            } else if ( size == 2 ) {
+                vector2 val = vector2(point(0, attr, srcpt));
+                setpointattrib(0, attr, dstpt, val);
+            } else if ( size == 3 ) {
+                vector val = vector(point(0, attr, srcpt));
+                setpointattrib(0, attr, dstpt, val);
+            } else if ( size == 4 ) {
+                vector4 val = vector4(point(0, attr, srcpt));
+                setpointattrib(0, attr, dstpt, val);
+            } else if ( size == 9 ) {
+                matrix3 val = matrix3(point(0, attr, srcpt));
+                setpointattrib(0, attr, dstpt, val);
+            } else if ( size == 16 ) {
+                matrix val = matrix(point(0, attr, srcpt));
+                setpointattrib(0, attr, dstpt, val);
+            }
+        }
+    }
 }
 
 #endif

@@ -321,5 +321,6 @@ dopwrap.main()]]></script>
     <memberTool name="escapeDop"/>
     <memberTool name="dopwrap"/>
     <memberTool name="tool_2"/>
+    <memberTool name="tool_3"/>
   </toolshelf>
 </shelfDocument>
