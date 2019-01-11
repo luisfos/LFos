@@ -1,32 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id$ -->
+
 <mainMenu>
-  <menuBar>
-    <subMenu id="my_submenu">
-      <label>LF</label>
+	<menuBar>
+		<subMenu id="lf_menu">
+			<label>LF</label>
+			<insertBefore>help_menu</insertBefore>
+			<!-- <insertAfter>windows_menu</insertAfter> -->			
+			
+			<scriptItem>
+				<label>I</label>
+				<scriptPath>$HOME/scripts/first_script.py</scriptPath>
+			</scriptItem>
 
-      <scriptItem>
-        <label>I</label>
-        <scriptPath>$HOME/scripts/first_script.py</scriptPath>
-      </scriptItem>
+			<titleItem>
+				<label>AM</label>
+			</titleItem>
 
-      <titleItem>
-        <label>AM</label>
-      </titleItem>
+			<scriptItem id="h.second_item">
+				<label>A</label>
+				<scriptPath>$HOME/scripts/generic_script.py</scriptPath>
+				<scriptArgs>-q -n camera</scriptArgs>
+			</scriptItem>
 
-      <scriptItem id="h.second_item">
-        <label>A</label>
-        <scriptPath>$HOME/scripts/generic_script.py</scriptPath>
-        <scriptArgs>-q -n camera</scriptArgs>
-      </scriptItem>
+			<separatorItem/>
 
-      <separatorItem/>
-
-      <scriptItem id="h.third_item">
-        <label>MENU!!!</label>
-        <scriptPath>$HOME/scripts/generic_script.py</scriptPath>
-        <scriptArgs>-q -n light</scriptArgs>
-      </scriptItem>
-    </subMenu>
-  </menuBar>
+			<scriptItem id="h.third_item">
+				<label>MENU!!!</label>
+				<scriptPath>$HOME/scripts/generic_script.py</scriptPath>
+				<scriptArgs>-q -n light</scriptArgs>
+			</scriptItem>
+		</subMenu>
+	</menuBar>
 </mainMenu>
 
