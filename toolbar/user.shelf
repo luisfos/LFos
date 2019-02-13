@@ -320,7 +320,7 @@ dopwrap.main()]]></script>
   <toolshelf name="custom" label="Custom">
     <memberTool name="escapeDop"/>
     <memberTool name="dopwrap"/>
-    <memberTool name="tool_2"/>
+    <memberTool name="NewProj"/>
     <memberTool name="tool_3"/>
   </toolshelf>
 </shelfDocument>
