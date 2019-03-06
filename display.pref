@@ -25,10 +25,10 @@
         ambOcclusionLevel ( 3 )
         maxTextureSize ( 1024 1024 )
         scaleTextureSize ( 100 )
-        HDRTextureFormat ( 1 )
+        HDRTextureFormat ( 2 )
         maxTexture3DSize ( 128 128 128 )
         scaleTexture3DSize ( 100 )
-        HDRTexture3DFormat ( 0 )
+        HDRTexture3DFormat ( 2 )
         transparencyQuality ( 1 )
         volumeQuality ( 2 )
         instancingFraction ( 1 )
@@ -39,8 +39,8 @@
         drawtexturedspots ( 1 )
         highQualityLighting ( 0 )
         ambientOcclusion ( 0 )
-        limitTextureSize ( 1 )
-        limitTexture3DSize ( 1 )
+        limitTextureSize ( 0 )
+        limitTexture3DSize ( 0 )
         mipMapTextures ( 1 )
         hdrRender ( 1 )
         drawshadows ( 0 )
@@ -156,7 +156,7 @@
         primnmlsmode ( on )
         boundarymode ( none )
         uvboundarymode ( uv )
-        shadingmode ( wire_ghost )
+        shadingmode ( shade )
     }
     SELECTED_SCENE_OBJECT_RENDERING_OPTIONS
     {
@@ -200,7 +200,7 @@
         primnmlsmode ( on )
         boundarymode ( none )
         uvboundarymode ( uv )
-        shadingmode ( wire_ghost )
+        shadingmode ( shade )
     }
     GHOST_SCENE_OBJECT_RENDERING_OPTIONS
     {
@@ -244,20 +244,20 @@
         primnmlsmode ( on )
         boundarymode ( none )
         uvboundarymode ( uv )
-        shadingmode ( wire_ghost )
+        shadingmode ( shade )
     }
     DISPLAY_MODEL_RENDERING_OPTIONS
     {
-        drawpointmarkers ( 0 )
+        drawpointmarkers ( 1 )
         drawpointnums ( 0 )
-        drawpointnmls ( 0 )
+        drawpointnmls ( 1 )
         drawpointtxtnums ( 0 )
         drawpointpos ( 0 )
         drawpointvel ( 0 )
         drawpointcoincident ( 0 )
         drawvertexmarkers ( 0 )
         drawvertexnums ( 0 )
-        drawvertexnmls ( 0 )
+        drawvertexnmls ( 1 )
         drawvertextxtnums ( 0 )
         drawprimnums ( 0 )
         drawprimnmls ( 0 )
@@ -288,7 +288,7 @@
         primnmlsmode ( on )
         boundarymode ( none )
         uvboundarymode ( uv )
-        shadingmode ( wire_ghost )
+        shadingmode ( shade )
     }
     CURRENT_MODEL_RENDERING_OPTIONS
     {
@@ -522,8 +522,8 @@
     matOverrides ( 1 )
     matUpdate ( 1 )
 }
-near ( 0.001 )
-far ( 10000 )
+near ( 0.114412 )
+far ( 5502.89 )
 adjustlimits ( 3 )
 orthogrid_spacing ( 0.2 0.2 )
 orthogrid_ruler ( 5 5 )
