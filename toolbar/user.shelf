@@ -322,5 +322,37 @@ dopwrap.main()]]></script>
     <memberTool name="dopwrap"/>
     <memberTool name="NewProj"/>
     <memberTool name="tool_3"/>
+    <memberTool name="abcFrame"/>
+    <memberTool name="bound_del"/>
   </toolshelf>
+
+  <tool name="abcFrame" label="Change abc frame" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[sel = hou.selectedNodes()
+
+val = "$FF-100"
+
+for n in sel:
+    allnodes = list(n.allSubChildren()) + [n]
+    for child in allnodes:       
+        # all obj level frame params (not needed but keeps consistent)
+        if child.type().category().name() == 'Object':
+            if 'alembic' in child.type().name():
+                parm = child.parm('frame')
+                if len(parm.keyframes())>0:
+                    parm.deleteAllKeyframes()
+                parm.setExpression(val)                
+                
+        # all sop level frame parameters (we only need this i think)
+        if child.type().category().name() == 'Sop':
+            if child.type().name() == 'alembic':
+                parm = child.parm('frame')
+                if len(parm.keyframes())>0:
+                    parm.deleteAllKeyframes()
+                parm.setExpression(val)
+                ]]></script>
+  </tool>
+
+  <tool name="bound_del" label="Bound delete" icon="SOP_delete">
+    <script scriptType="python"><![CDATA[]]></script>
+  </tool>
 </shelfDocument>

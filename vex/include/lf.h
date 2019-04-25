@@ -249,16 +249,22 @@ function string [] matchInArray(string array[]; string toMatch[])
     return matches;
 }
 
-function float hedgelength(int input; int hedge){
+function float hedge_length(int input; int hedge){
     vector p1 = point(input, "P", hedge_srcpoint(input, hedge));
     vector p2 = point(input, "P", hedge_dstpoint(input, hedge));
     return distance(p1, p2);
 }
 
-function float hedgelength2(int input; int hedge){
+function float hedge_length2(int input; int hedge){
     vector p1 = point(input, "P", hedge_srcpoint(input, hedge));
     vector p2 = point(input, "P", hedge_dstpoint(input, hedge));
     return distance2(p1, p2);
+}
+
+function vector hedge_direction(int input; int hedge){
+    vector p1 = point(input, "P", hedge_srcpoint(input, hedge));
+    vector p2 = point(input, "P", hedge_dstpoint(input, hedge));
+    return p2-p1;
 }
 
 function float vertexangle(int input; int linearvertex){
@@ -278,36 +284,89 @@ function float vertexangle(int input; int linearvertex){
 }
 
 // copy attrib between points
-function void copyattrib(int input; int srcpt; int dstpt){
-    string attrs[] = detailintrinsic(0, 'pointattributes');
+function void copypointattribs(int input; int srcpt; int dstpt){
+    string attrs[] = detailintrinsic(input, 'pointattributes');
     foreach( string attr; attrs){
         if ( attr == 'P' ){
             continue;
-        }    
-        int type = pointattribtype(0, attr);
+        }        
+        int type = pointattribtype(input, attr);
+        if (type == 0){ // for integer attrs
+        	int size = pointattribsize(input, attr);
+        	if ( size == 1 ) {
+                int val = int(point(input, attr, srcpt));
+                setpointattrib(0, attr, dstpt, val);
+            }
+    	}
+
         if (type == 1){
-            int size = pointattribsize(0, attr);
+            int size = pointattribsize(input, attr);
             if ( size == 1 ) {
-                float val = float(point(0, attr, srcpt));
+                float val = float(point(input, attr, srcpt));
                 setpointattrib(0, attr, dstpt, val);
             } else if ( size == 2 ) {
-                vector2 val = vector2(point(0, attr, srcpt));
+                vector2 val = vector2(point(input, attr, srcpt));
                 setpointattrib(0, attr, dstpt, val);
             } else if ( size == 3 ) {
-                vector val = vector(point(0, attr, srcpt));
+                vector val = vector(point(input, attr, srcpt));
                 setpointattrib(0, attr, dstpt, val);
             } else if ( size == 4 ) {
-                vector4 val = vector4(point(0, attr, srcpt));
+                vector4 val = vector4(point(input, attr, srcpt));
                 setpointattrib(0, attr, dstpt, val);
             } else if ( size == 9 ) {
-                matrix3 val = matrix3(point(0, attr, srcpt));
+                matrix3 val = matrix3(point(input, attr, srcpt));
                 setpointattrib(0, attr, dstpt, val);
             } else if ( size == 16 ) {
-                matrix val = matrix(point(0, attr, srcpt));
+                matrix val = matrix(point(input, attr, srcpt));
                 setpointattrib(0, attr, dstpt, val);
             }
         }
     }
+}
+
+// copy attrib between prims
+function void copyprimattribs(int input; int srcpr; int dstpr){
+    string attrs[] = detailintrinsic(input, 'primitiveattributes');
+    foreach( string attr; attrs){
+        if ( attr == 'P' ){
+            continue;
+        }    
+        int type = primattribtype(input, attr);
+        if (type == 0){ // for integer attrs
+        	int size = primattribsize(input, attr);
+        	if ( size == 1 ) {
+                int val = int(prim(input, attr, srcpr));
+                setprimattrib(0, attr, dstpr, val);
+            }
+    	}
+        if (type == 1){
+            int size = primattribsize(input, attr);
+            if ( size == 1 ) {
+                float val = float(prim(input, attr, srcpr));
+                setprimattrib(0, attr, dstpr, val);
+            } else if ( size == 2 ) {
+                vector2 val = vector2(prim(input, attr, srcpr));
+                setprimattrib(0, attr, dstpr, val);
+            } else if ( size == 3 ) {
+                vector val = vector(prim(input, attr, srcpr));
+                setprimattrib(0, attr, dstpr, val);
+            } else if ( size == 4 ) {
+                vector4 val = vector4(prim(input, attr, srcpr));
+                setprimattrib(0, attr, dstpr, val);
+            } else if ( size == 9 ) {
+                matrix3 val = matrix3(prim(input, attr, srcpr));
+                setprimattrib(0, attr, dstpr, val);
+            } else if ( size == 16 ) {
+                matrix val = matrix(prim(input, attr, srcpr));
+                setprimattrib(0, attr, dstpr, val);
+            }
+        }
+    }
+    attrs = detailintrinsic(input, 'primitivegroups');
+    foreach( string attr; attrs){
+    	int val = inprimgroup(input, attr, srcpr);
+    	setprimgroup(0, attr, dstpr, val);
+	}
 }
 
 #endif
