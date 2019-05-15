@@ -275,9 +275,9 @@ function float vertexangle(int input; int linearvertex){
     float a1, a2, a3;
     float s1, s2, s3;
     
-    s1 = hedgelength(0, h3);
-    s2 = hedgelength(0, h2);
-    s3 = hedgelength(0, h1);
+    s1 = hedge_length(0, h3);
+    s2 = hedge_length(0, h2);
+    s3 = hedge_length(0, h1);
     
     float c = (s2*s2 + s3*s3 - s1*s1) / (2 * s2 * s3);
     return acos(c);
