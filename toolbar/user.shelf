@@ -324,6 +324,7 @@ dopwrap.main()]]></script>
     <memberTool name="tool_3"/>
     <memberTool name="abcFrame"/>
     <memberTool name="bound_del"/>
+    <memberTool name="convertgrp"/>
   </toolshelf>
 
   <tool name="abcFrame" label="Change abc frame" icon="PLASMA_App">
@@ -354,5 +355,59 @@ for n in sel:
 
   <tool name="bound_del" label="Bound delete" icon="SOP_delete">
     <script scriptType="python"><![CDATA[]]></script>
+  </tool>
+
+  <tool name="convertgrp" label="Convert Group" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[sel = hou.selectedNodes()
+sel = sel[0] # only first node for now
+
+parm_grp = sel.parm("group") # need smart way to find grp parm
+if parm_grp is None:
+    quit()
+    
+grp_type = sel.parm("grouptype").evalAsString()
+geo = sel.inputs()[0].geometry().freeze(True)
+
+# specified with UI or guess - todo
+attr = "name"
+
+
+data = parm_grp.evalAsString()
+
+data.split(" ")
+allowed = "0123456789-"
+newdata = []
+
+geo_data = geo.pointStringAttribValues(attr)
+geo_data_len = len(geo_data)
+prefix = "@"+attr+"="
+for item in data.split(" "):
+    # only work on items with numbers and hyphons
+    if all( char in allowed for char in item ):
+        # expand hyphon ranges
+        if "-" in item:
+            vals = item.split("-")
+            for num in range(int(vals[0]), int(vals[1])+1):
+                if int(num) > geo_data_len :
+                    continue
+                newdata.append( prefix + str(geo_data[int(num)]) )
+        else:            
+            if int(item) > geo_data_len :
+                continue
+            newdata.append( prefix + str(geo_data[int(item)] ) )
+    else:
+        newdata.append( item )
+
+# format newdata for parm
+#print newdata
+parm_grp.set( " ".join(newdata) )
+        
+
+                 
+
+    
+            
+
+]]></script>
   </tool>
 </shelfDocument>

@@ -12,3 +12,5 @@ n_in.setPosition( input1.position() + hou.Vector2(0,-1) )
 #n_in.moveToGoodPosition()
 n_out.setInput(0, n_in)
 n_out.setPosition( n_in.position() + hou.Vector2(0,-8) )
+
+print "subnet oncreated run "
