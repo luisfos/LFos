@@ -325,6 +325,7 @@ dopwrap.main()]]></script>
     <memberTool name="abcFrame"/>
     <memberTool name="bound_del"/>
     <memberTool name="convertgrp"/>
+    <memberTool name="getHdaIcon"/>
   </toolshelf>
 
   <tool name="abcFrame" label="Change abc frame" icon="PLASMA_App">
@@ -409,5 +410,43 @@ parm_grp.set( " ".join(newdata) )
             
 
 ]]></script>
+  </tool>
+
+  <tool name="getHdaIcon" label="Get Icon" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import tempfile
+import hou
+import subprocess
+
+sel = hou.selectedNodes()
+if len(sel) != 1:
+    hou.ui.displayMessage("invalid selected nodes")
+    quit()
+        
+n = sel[0] #hou.node('/obj/macbethChart1')
+hm = n.type().definition()
+#print [x[0] for x in hm.parsedContents()]
+icon = hm.sections()['IconImage'] # this is a .pic file
+
+# prompt user for place to save file
+path = hou.ui.selectFile(start_directory="~", title="Save to image file", chooser_mode=hou.fileChooserMode.Write)
+path = hou.expandString(path)
+print path
+
+
+if path is not None: 
+    data = icon.contents()
+    
+    # write to temp file    
+    f = tempfile.NamedTemporaryFile()
+    f.write(data)
+    f.seek(0) # return to beginning of file
+    
+    
+    fin_cmd = "iconvert {0} {1} -n Houdini".format(f.name, path)
+    status = subprocess.check_output(fin_cmd, shell=True)
+    print status
+    
+    f.close()
+    ]]></script>
   </tool>
 </shelfDocument>
