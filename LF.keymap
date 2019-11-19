@@ -10876,7 +10876,7 @@
 				},
 				{
 					"symbol":"h.update_mode_always",
-					"keys":["."
+					"keys":[","
 					]
 				},
 				{
@@ -10886,7 +10886,7 @@
 				},
 				{
 					"symbol":"h.update_mode_never",
-					"keys":[","
+					"keys":["."
 					]
 				},
 				{
