@@ -326,6 +326,7 @@ dopwrap.main()]]></script>
     <memberTool name="bound_del"/>
     <memberTool name="convertgrp"/>
     <memberTool name="getHdaIcon"/>
+    <memberTool name="tool_1"/>
   </toolshelf>
 
   <tool name="abcFrame" label="Change abc frame" icon="PLASMA_App">
@@ -370,7 +371,7 @@ grp_type = sel.parm("grouptype").evalAsString()
 geo = sel.inputs()[0].geometry().freeze(True)
 
 # specified with UI or guess - todo
-attr = "name"
+attr = "id"
 
 
 data = parm_grp.evalAsString()
