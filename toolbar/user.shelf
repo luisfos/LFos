@@ -317,18 +317,6 @@ for pair in pairs:
 dopwrap.main()]]></script>
   </tool>
 
-  <toolshelf name="custom" label="Custom">
-    <memberTool name="escapeDop"/>
-    <memberTool name="dopwrap"/>
-    <memberTool name="NewProj"/>
-    <memberTool name="tool_3"/>
-    <memberTool name="abcFrame"/>
-    <memberTool name="bound_del"/>
-    <memberTool name="convertgrp"/>
-    <memberTool name="getHdaIcon"/>
-    <memberTool name="tool_1"/>
-  </toolshelf>
-
   <tool name="abcFrame" label="Change abc frame" icon="PLASMA_App">
     <script scriptType="python"><![CDATA[sel = hou.selectedNodes()
 
@@ -450,4 +438,14 @@ if path is not None:
     f.close()
     ]]></script>
   </tool>
+
+  <toolshelf name="lfos" label="Lfos">
+    <memberTool name="escapeDop"/>
+    <memberTool name="dopwrap"/>
+    <memberTool name="abcFrame"/>
+    <memberTool name="bound_del"/>
+    <memberTool name="convertgrp"/>
+    <memberTool name="getHdaIcon"/>
+    <memberTool name="fixCamClip"/>
+  </toolshelf>
 </shelfDocument>

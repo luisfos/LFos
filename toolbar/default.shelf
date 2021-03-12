@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shelfDocument>
+  <!-- This file contains definitions of shelves, toolbars, and tools.
+ It should not be hand-edited when it is being used by the application.
+ Note, that two definitions of the same element are not allowed in
+ a single file. -->
+
+  <tool name="fixCamClip" label="Fix Clip Planes" icon="OBJ_camera">
+    <script scriptType="python"><![CDATA[# https://www.sidefx.com/docs/houdini/hom/hou/GeometryViewportDisplaySet.html
+
+# Get a reference to the geometry viewer
+pane = hou.ui.curDesktop().paneTabOfType(hou.paneTabType.SceneViewer)
+cam = pane.curViewport().defaultCamera()
+
+# toggles through small medium large
+small = (0.0001,9.99)
+medium = (0.01, 999.99)
+large = (10.0,999999.0)
+
+arr = [small, medium, large]
+arr1 = [x[0] for x in arr]
+
+# if already one of the default settings, toggle next
+if cam.clipPlanes()[0] in arr1:
+    idx = arr1.index(cam.clipPlanes()[0])
+    idx = (idx+1)%3
+    cam.setClipPlanes( arr[idx] )
+else:    # set default
+    cam.setClipPlanes( medium )]]></script>
+  </tool>
+</shelfDocument>
