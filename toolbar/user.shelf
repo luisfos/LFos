@@ -439,7 +439,7 @@ if path is not None:
     ]]></script>
   </tool>
 
-  <toolshelf name="lfos" label="Lfos">
+  <toolshelf name="lfos" label="LFos">
     <memberTool name="escapeDop"/>
     <memberTool name="dopwrap"/>
     <memberTool name="abcFrame"/>
