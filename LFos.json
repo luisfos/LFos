@@ -1,0 +1,8 @@
+{
+	"env": [
+	    {
+		"LF": "PATH/TO/LFos"
+	    },
+	],
+	"path": "$LF"	
+}
