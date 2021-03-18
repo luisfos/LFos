@@ -1,1 +1,13 @@
 ophide Sop fxCache::*
+ophide Sop lfos_attribRemap
+ophide Sop lfos_attribFit
+ophide Sop Luis_lightning_strike
+ophide Sop polySharpen
+ophide Sop lfos_proxyMesh
+
+ophide Driver flipbook
+ophide Driver pipeflipbook
+ophide Driver ffmpeg
+
+ophide Object cam_x::1.0
+ophide Object camRig
