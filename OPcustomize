@@ -1,9 +1,26 @@
 ophide Sop fxCache::*
 ophide Sop lfos_attribRemap
 ophide Sop lfos_attribFit
-ophide Sop Luis_lightning_strike
 ophide Sop polySharpen
+ophide Sop lfos_removeSelfIntersection
+ophide Sop lfos_segmentVel
+ophide Sop sparks
+ophide Sop timecopy
+
+// to work on later 
 ophide Sop lfos_proxyMesh
+ophide Sop lfos_smoothAnim
+ophide Sop Luis_lightning_strike
+ophide Sop rope
+ophide Sop sparks::2.0
+ophide Sop attrSpread
+ophide Sop lfos::polyThicken::1.0
+ophide Sop luijee::volumeDeform
+ophide Sop lf_infect_quick
+
+
+
+
 
 ophide Driver flipbook
 ophide Driver pipeflipbook
