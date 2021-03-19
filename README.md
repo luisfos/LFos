@@ -43,7 +43,7 @@ and more
 Example scene files & more to come. 
 
 Other useful stuff to check out:
-https://github.com/Aeoll/Aelib
-https://github.com/toadstorm/MOPS
-Cave Academy Props
-https://www.tokeru.com/cgwiki/index.php?title=Houdini
+- https://github.com/Aeoll/Aelib
+- https://github.com/toadstorm/MOPS
+- Cave Academy Props
+- https://www.tokeru.com/cgwiki/index.php?title=Houdini
