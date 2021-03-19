@@ -28,4 +28,107 @@ if cam.clipPlanes()[0] in arr1:
 else:    # set default
     cam.setClipPlanes( medium )]]></script>
   </tool>
+
+  <tool name="getHdaIcon" label="Get Icon" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import tempfile
+import hou
+import subprocess
+
+sel = hou.selectedNodes()
+if len(sel) != 1:
+    hou.ui.displayMessage("invalid selected nodes")
+    quit()
+        
+n = sel[0] #hou.node('/obj/macbethChart1')
+hm = n.type().definition()
+#print [x[0] for x in hm.parsedContents()]
+icon = hm.sections()['IconImage'] # this is a .pic file
+
+# prompt user for place to save file
+path = hou.ui.selectFile(start_directory="~", title="Save to image file", chooser_mode=hou.fileChooserMode.Write)
+path = hou.expandString(path)
+print path
+
+
+if path is not None: 
+    data = icon.contents()
+    
+    # write to temp file    
+    f = tempfile.NamedTemporaryFile()
+    f.write(data)
+    f.seek(0) # return to beginning of file
+    
+    
+    fin_cmd = "iconvert {0} {1} -n Houdini".format(f.name, path)
+    status = subprocess.check_output(fin_cmd, shell=True)
+    print status
+    
+    f.close()
+    ]]></script>
+  </tool>
+
+  <tool name="convertgrp" label="Convert Group" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[sel = hou.selectedNodes()
+sel = sel[0] # only first node for now
+
+parm_grp = sel.parm("group") # need smart way to find grp parm
+if parm_grp is None:
+    quit()
+    
+grp_type = sel.parm("grouptype").evalAsString()
+geo = sel.inputs()[0].geometry().freeze(True)
+
+# specified with UI or guess - todo
+attr = "id"
+
+
+data = parm_grp.evalAsString()
+
+data.split(" ")
+allowed = "0123456789-"
+newdata = []
+
+geo_data = geo.pointStringAttribValues(attr)
+geo_data_len = len(geo_data)
+prefix = "@"+attr+"="
+for item in data.split(" "):
+    # only work on items with numbers and hyphons
+    if all( char in allowed for char in item ):
+        # expand hyphon ranges
+        if "-" in item:
+            vals = item.split("-")
+            for num in range(int(vals[0]), int(vals[1])+1):
+                if int(num) > geo_data_len :
+                    continue
+                newdata.append( prefix + str(geo_data[int(num)]) )
+        else:            
+            if int(item) > geo_data_len :
+                continue
+            newdata.append( prefix + str(geo_data[int(item)] ) )
+    else:
+        newdata.append( item )
+
+# format newdata for parm
+#print newdata
+parm_grp.set( " ".join(newdata) )
+        
+
+                 
+
+    
+            
+
+]]></script>
+  </tool>
+
+  <tool name="bound_del" label="Bound delete" icon="SOP_delete">
+    <script scriptType="python"><![CDATA[]]></script>
+  </tool>
+
+  <toolshelf name="lfos" label="LFos">
+    <memberTool name="bound_del"/>
+    <memberTool name="convertgrp"/>
+    <memberTool name="getHdaIcon"/>
+    <memberTool name="fixCamClip"/>
+  </toolshelf>
 </shelfDocument>
