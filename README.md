@@ -47,3 +47,4 @@ Other useful stuff to check out:
 - https://github.com/toadstorm/MOPS
 - Cave Academy Props
 - https://www.tokeru.com/cgwiki/index.php?title=Houdini
+- https://github.com/jamesrobinsonvfx/mplay_batch
