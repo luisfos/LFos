@@ -5,7 +5,7 @@
  Note, that two definitions of the same element are not allowed in
  a single file. -->
 
-  <tool name="fixCamClip" label="Fix Clip Planes" icon="OBJ_camera">
+  <tool name="fixCamClip" label="Cycle Clip Planes" icon="OBJ_camera">
     <script scriptType="python"><![CDATA[# https://www.sidefx.com/docs/houdini/hom/hou/GeometryViewportDisplaySet.html
 
 # Get a reference to the geometry viewer
