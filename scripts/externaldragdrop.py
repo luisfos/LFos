@@ -4,7 +4,7 @@
 
 import hou, re, os, sys, platform
 
-from urllib import unquote
+from urllib.parse import unquote
 #decode urlpath on windows
 
 def dropAccept(files):
