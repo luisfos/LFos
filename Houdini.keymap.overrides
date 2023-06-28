@@ -1,0 +1,3 @@
+h.enable_sim	"Enable/Disable Simulations"	"Toggle cooking of simulations"	 F9
+h.update_mode_always	"Update Mode 'Auto Update'"	"Update mode 'Auto Update'"	 F11
+h.update_mode_never	"Update Mode 'Manual'"	"Update mode 'Manual'"	 F10

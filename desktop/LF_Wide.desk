@@ -6,32 +6,37 @@ menubar      -1
 statusbar    -1
 radial menu set main
 root {
-    split 0.246667 H {
-        tabs 0 1 {
-            pane panetab1 -a 0 -l 10 -H /obj/FX_SIMULATION/convert_to_mesh1/ -T SOP -m sceneview
-            pane panetab3 -a 0 -l 10 -H /obj/FX_SIMULATION/convert_to_mesh1/ -T SOP -m iprviewer
-            pane panetab4 -a 0 -l 10 -H /img/comp1/ -T COP2 -m imageview
+    split 0.461979 H {
+        tabs 1 1 {
+            pane panetab1 -a 0 -l 10 -H /obj/ -T OBJ -m sceneview
+            pane panetab3 -a 0 -l 10 -H /obj/ -T OBJ -m iprviewer
         }
-        split 0.283806 V {
+        tabs 0 1 {
+            pane panetab7 -a 0 -l 10 -H /obj/ -T OBJ -m neteditor
+        }
+    }
+
+    panel panel1 -w -2147483648 -2147483648 -1 -1 {
+        split 0.5 V {
             tabs 0 1 {
-                pane panetab7 -a 0 -l 10 -H /obj/FX_SIMULATION/convert_to_mesh1/ -T SOP -m neteditor
+                pane panetab2 -a 0 -l 10 -H /obj/ -T OBJ -m parmeditor
             }
             tabs 0 1 {
-                pane panetab6 -a 0 -l 10 -H /obj/FX_SIMULATION/convert_to_mesh1/ -T SOP -m details
+                pane panetab4 -a 0 -l 10 -H /obj/ -T OBJ -m details
             }
         }
     }
 }
 shelfdock -o 0 -l icon_and_text -G "0.46 0.50" add shelf_set_1 shelf_set_2
 viewerstow -x open -b open -l open -m hide -c hide -d open ${DESKNAME}.panetab1.world
-vieweroption -a 0 ${DESKNAME}.panetab1.world
+vieweroption -a 2 ${DESKNAME}.panetab1.world
 viewlayout -s 2 ${DESKNAME}.panetab1.world
 viewtype -t ortho_right ${DESKNAME}.panetab1.world.`vpname("${DESKNAME}.panetab1.world",4)`
 viewtype -t ortho_front ${DESKNAME}.panetab1.world.`vpname("${DESKNAME}.panetab1.world",3)`
-viewtype -t perspective ${DESKNAME}.panetab1.world.`vpname("${DESKNAME}.panetab1.world",1)`
+viewtype -t ortho_top ${DESKNAME}.panetab1.world.`vpname("${DESKNAME}.panetab1.world",1)`
 viewtype -t perspective ${DESKNAME}.panetab1.world.`vpname("${DESKNAME}.panetab1.world",2)`
 iprview -t 0.1 -l 0 -e 1 -u 1  panetab3
-networkeditor -p '{\n	"obj:listmode":"0",\n	"sop:listmode":"0",\n	"showspareinputdep":"1",\n	"showchilddep":"1",\n	"showdep":"0",\n	"showtaskgraphperf":"0",\n	"taskgraphperfstatname":"Cook Time",\n	"perfstatname":"Time",\n	"showperfstats":"1",\n	"grouplistsplit":"0.75",\n	"showtree":"0",\n	"showtypesidebar":"0",\n	"taskgraphsortcriteria":"Automatic",\n	"showparmdialogmax":"1",\n	"treesplit":"0.25",\n	"palettesize":"150 150",\n	"typesidebarsplit":"0.25",\n	"taskgraphcollapsemode":"Off",\n	"workitemcolorattribute":"",\n	"gridmode":"0",\n	"showtimedep":"0",\n	"overviewbounds":"0.000000 0.000000 561.900000 240.000000",\n	"overviewmode":"2",\n	"showgrouplist":"0",\n	"palettemode":"0",\n	"useworkitemcolorattribute":"0",\n	"showtasksmenu":"1",\n	"backgroundimageediting":"0",\n	"backgroundimagebrightness":"1.0",\n	"gridystep":"1.0",\n	"palettecolors":"",\n	"showmenu":"1",\n	"gridxstep":"2.0",\n	"showparmdialog":"1"\n}\n' panetab7
+networkeditor -p '{\n	"sop:listmode":"0",\n	"obj:listmode":"0",\n	"showspareinputdep":"1",\n	"showchilddep":"1",\n	"showdep":"0",\n	"showtaskgraphperf":"0",\n	"taskgraphperfstatname":"Cook Time",\n	"perfstatname":"Time",\n	"showperfstats":"1",\n	"grouplistsplit":"0.75",\n	"showtree":"0",\n	"showtypesidebar":"0",\n	"taskgraphsortcriteria":"Automatic",\n	"showparmdialogmax":"1",\n	"treesplit":"0.25",\n	"palettesize":"150 150",\n	"typesidebarsplit":"0.25",\n	"taskgraphcollapsemode":"Off",\n	"workitemcolorattribute":"",\n	"gridmode":"0",\n	"showtimedep":"0",\n	"overviewbounds":"0.000000 0.000000 409.200000 336.000000",\n	"overviewmode":"2",\n	"showgrouplist":"0",\n	"palettemode":"0",\n	"useworkitemcolorattribute":"0",\n	"showtasksmenu":"1",\n	"backgroundimageediting":"0",\n	"backgroundimagebrightness":"1.0",\n	"gridystep":"1.0",\n	"palettecolors":"",\n	"showmenu":"1",\n	"gridxstep":"2.0",\n	"showparmdialog":"0"\n}\n' panetab7
 netcolumns -c display,xray,select,origin,capture,bone -n OBJ panetab7
 netcolumns -c display,render,template,selectabletemplate,highlight,unload,bypass,lock -n SOP panetab7
 netcolumns -c delscript,comment -n CHOPNET panetab7
@@ -48,3 +53,4 @@ netcolumns -c delscript,comment -n TOPNET panetab7
 netcolumns -c display,bypass,delscript,comment,input -n LOP panetab7
 netcolumns -c delscript,comment -n MGR panetab7
 netcolumns -c delscript,comment -n DIR panetab7
+parmeditor -T 0.25 -w 0 panetab2

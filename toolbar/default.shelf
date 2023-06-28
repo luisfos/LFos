@@ -130,5 +130,297 @@ parm_grp.set( " ".join(newdata) )
     <memberTool name="convertgrp"/>
     <memberTool name="getHdaIcon"/>
     <memberTool name="fixCamClip"/>
+    <memberTool name="fxcacheConvert"/>
+    <memberTool name="setJob"/>
+    <memberTool name="unusedMat"/>
+    <memberTool name="subnet"/>
+    <memberTool name="sel bbox"/>
+    <memberTool name="script"/>
+    <memberTool name="collect"/>
   </toolshelf>
+
+  <tool name="fxcacheConvert" label="fxCache to Filecache" icon="SOP_file">
+    <script scriptType="python"><![CDATA[sel = hou.selectedNodes()
+fx = sel[0]
+
+dir = fx.parm('directory').unexpandedString()
+component = fx.parm('component').evalAsString()
+ver = fx.parm('version_read').evalAsInt()
+ver = 'v'+str(ver).zfill(2)
+
+filecache = fx.input(0).createOutputNode('filecache')
+path = '{}/{}/{}/'.format(dir,component,ver)
+filecache.parm('loadfromdisk').set(True)
+filecache.parm('file').set(path)
+
+
+]]></script>
+  </tool>
+
+  <tool name="setJob" label="Set Job" icon="PLASMA_App">
+    <helpText><![CDATA[Prompts to select JOB location. Defaults to $JOB/hip/.hipfile]]></helpText>
+    <script scriptType="python"><![CDATA[import toolutils
+from pathlib import Path
+
+
+
+# guess from hip
+# show context box
+
+hip = hou.hipFile.path()
+p = Path(hip)
+proj = p.parent
+if proj.name == 'hip':
+    proj = proj.parent
+
+winpath = proj.as_posix()
+
+result = hou.ui.selectFile(winpath, 'Select $JOB', file_type=hou.fileType.Directory, default_value= winpath)
+
+if result is not None:
+    result = Path(result).as_posix()
+    cmd = 'set JOB = {}'.format(result)
+    hou.hscript(cmd)
+
+]]></script>
+  </tool>
+
+  <tool name="unusedMat" label="Unused Mats" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[mat = hou.node("/mat")
+
+for n in mat.children():
+    if len(n.dependents())==0:
+        n.setColor(hou.Color(1,0,0))
+    ]]></script>
+  </tool>
+
+  <tool name="sel bbox" label="Sel bbox" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import toolutils
+
+view = toolutils.sceneViewer()
+sel = view.currentGeometrySelection()
+network = toolutils.networkEditor()
+print(network)
+
+if not None:
+    bb = sel.boundingBox()    
+    me = hou.selectedNodes()[0]
+    
+    group = me.createOutputNode("groupcreate")
+    group.parm('groupbase').set(False)
+    group.parm('groupbounding').set(True)    
+    
+    group.parmTuple('size').set(bb.sizevec())
+    group.parmTuple('t').set(bb.center())
+    
+    ]]></script>
+  </tool>
+
+  <tool name="subnet" label="rs_lookdev" icon="OBJ_subnet">
+    <helpURL>operator:Object/subnet</helpURL>
+    <toolMenuContext name="network">
+      <contextOpType>Object/subnet</contextOpType>
+    </toolMenuContext>
+    <script scriptType="python"><![CDATA[
+import sys
+import toolutils
+
+outputitem = None
+inputindex = -1
+inputitem = None
+outputindex = -1
+
+num_args = 1
+h_extra_args = ''
+pane = toolutils.activePane(kwargs)
+if not isinstance(pane, hou.NetworkEditor):
+    pane = hou.ui.paneTabOfType(hou.paneTabType.NetworkEditor)
+    if pane is None:
+       hou.ui.displayMessage(
+               'Cannot create node: cannot find any network pane')
+       sys.exit(0)
+else: # We're creating this tool from the TAB menu inside a network editor
+    pane_node = pane.pwd()
+    if "outputnodename" in kwargs and "inputindex" in kwargs:
+        outputitem = pane_node.item(kwargs["outputnodename"])
+        inputindex = kwargs["inputindex"]
+        h_extra_args += 'set arg4 = "' + kwargs["outputnodename"] + '"\n'
+        h_extra_args += 'set arg5 = "' + str(inputindex) + '"\n'
+        num_args = 6
+    if "inputnodename" in kwargs and "outputindex" in kwargs:
+        inputitem = pane_node.item(kwargs["inputnodename"])
+        outputindex = kwargs["outputindex"]
+        h_extra_args += 'set arg6 = "' + kwargs["inputnodename"] + '"\n'
+        h_extra_args += 'set arg9 = "' + str(outputindex) + '"\n'
+        num_args = 9
+    if "autoplace" in kwargs:
+        autoplace = kwargs["autoplace"]
+    else:
+        autoplace = False
+    # If shift-clicked we want to auto append to the current
+    # node
+    if "shiftclick" in kwargs and kwargs["shiftclick"]:
+        if inputitem is None:
+            inputitem = pane.currentNode()
+            outputindex = 0
+    if "nodepositionx" in kwargs and             "nodepositiony" in kwargs:
+        try:
+            pos = [ float( kwargs["nodepositionx"] ),
+                    float( kwargs["nodepositiony"] )]
+        except:
+            pos = None
+    else:
+        pos = None
+
+    if not autoplace and not pane.listMode():
+        if pos is not None:
+            pass
+        elif outputitem is None:
+            pos = pane.selectPosition(inputitem, outputindex, None, -1)
+        else:
+            pos = pane.selectPosition(inputitem, outputindex,
+                                      outputitem, inputindex)
+
+    if pos is not None:
+        if "node_bbox" in kwargs:
+            size = kwargs["node_bbox"]
+            pos[0] -= size[0] / 2
+            pos[1] -= size[1] / 2
+        else:
+            pos[0] -= 0.573625
+            pos[1] -= 0.220625
+        h_extra_args += 'set arg2 = "' + str(pos[0]) + '"\n'
+        h_extra_args += 'set arg3 = "' + str(pos[1]) + '"\n'
+h_extra_args += 'set argc = "' + str(num_args) + '"\n'
+
+pane_node = pane.pwd()
+child_type = pane_node.childTypeCategory().nodeTypes()
+
+if 'subnet' not in child_type:
+   hou.ui.displayMessage(
+           'Cannot create node: incompatible pane network type')
+   sys.exit(0)
+
+# First clear the node selection
+pane_node.setSelected(False, True)
+
+h_path = pane_node.path()
+h_preamble = 'set arg1 = "' + h_path + '"\n'
+h_cmd = r'''
+if ($argc < 2 || "$arg2" == "") then
+   set arg2 = 0
+endif
+if ($argc < 3 || "$arg3" == "") then
+   set arg3 = 0
+endif
+# Automatically generated script
+# $arg1 - the path to add this node
+# $arg2 - x position of the tile
+# $arg3 - y position of the tile
+# $arg4 - input node to wire to
+# $arg5 - which input to wire to
+# $arg6 - output node to wire to
+# $arg7 - the type of this node
+# $arg8 - the node is an indirect input
+# $arg9 - index of output from $arg6
+
+\set noalias = 1
+set saved_path = `execute("oppwf")`
+opcf $arg1
+
+# Node $_obj_rs_lookdev (Object/subnet)
+set _obj_rs_lookdev = `run("opadd -e -n -v subnet rs_lookdev")`
+oplocate -x `$arg2 + 0` -y `$arg3 + 0` $_obj_rs_lookdev
+opset -S on $_obj_rs_lookdev
+chautoscope $_obj_rs_lookdev +tx +ty +tz +rx +ry +rz +sx +sy +sz
+opset -d on -r off -h off -f off -y off -t off -l off -s off -u off -F on -c on -e on -b off -x off $_obj_rs_lookdev
+opexprlanguage -s hscript $_obj_rs_lookdev
+opcf $_obj_rs_lookdev
+
+# Node $_obj_rs_lookdev_cyclorama1 (lfos::rs::Object/cyclorama::1.0)
+set _obj_rs_lookdev_cyclorama1 = `run("opadd -e -n -v lfos::rs::cyclorama::1.0 cyclorama1")`
+oplocate -x `$arg2 + 0` -y `$arg3 + 5.2176` $_obj_rs_lookdev_cyclorama1
+opset -S on $_obj_rs_lookdev_cyclorama1
+chautoscope $_obj_rs_lookdev_cyclorama1 +tx +ty +tz +rx +ry +rz +sx +sy +sz
+opset -d on -r off -h off -f off -y off -t off -l off -s off -u off -F on -c on -e on -b off -x off $_obj_rs_lookdev_cyclorama1
+opexprlanguage -s hscript $_obj_rs_lookdev_cyclorama1
+opuserdata -n '___Version___' -v '' $_obj_rs_lookdev_cyclorama1
+
+# Node $_obj_rs_lookdev_refBalls1 (lfos::rs::Object/refBalls::1.0)
+set _obj_rs_lookdev_refBalls1 = `run("opadd -e -n -v lfos::rs::refBalls::1.0 refBalls1")`
+oplocate -x `$arg2 + 0` -y `$arg3 + 4.0803089999999997` $_obj_rs_lookdev_refBalls1
+opset -S on $_obj_rs_lookdev_refBalls1
+opparm $_obj_rs_lookdev_refBalls1 t2 ( 1.8858039379119873 0 -1.8196372389793396 ) r2 ( 0 -4.5932791677578955 0 )
+chautoscope $_obj_rs_lookdev_refBalls1 +tx +ty +tz +rx +ry +rz +sx +sy +sz +t2x +t2y +t2z +r2x +r2y +r2z +s2x +s2y +s2z
+opset -d on -r off -h off -f off -y off -t off -l off -s off -u off -F on -c on -e on -b off -x off $_obj_rs_lookdev_refBalls1
+opexprlanguage -s hscript $_obj_rs_lookdev_refBalls1
+opuserdata -n '___Version___' -v '' $_obj_rs_lookdev_refBalls1
+opuserdata -n 'wirestyle' -v 'rounded' $_obj_rs_lookdev_refBalls1
+
+# Node $_obj_rs_lookdev_rslightdome1 (Object/rslightdome::2.0)
+set _obj_rs_lookdev_rslightdome1 = `run("opadd -e -n -v rslightdome::2.0 rslightdome1")`
+oplocate -x `$arg2 + 0.020050000000000345` -y `$arg3 + 2.5618189999999998` $_obj_rs_lookdev_rslightdome1
+chblockbegin
+chadd -t 0 0 $_obj_rs_lookdev_rslightdome1 sx
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'lock(1)' $_obj_rs_lookdev_rslightdome1/sx
+chadd -t 0 0 $_obj_rs_lookdev_rslightdome1 sy
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'lock(1)' $_obj_rs_lookdev_rslightdome1/sy
+chadd -t 0 0 $_obj_rs_lookdev_rslightdome1 sz
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'lock(1)' $_obj_rs_lookdev_rslightdome1/sz
+chadd -t 0 0 $_obj_rs_lookdev_rslightdome1 scale
+chkey -t 0 -v 1 -m 0 -a 0 -A 0 -T a  -F 'lock(1)' $_obj_rs_lookdev_rslightdome1/scale
+chadd -t 0 0 $_obj_rs_lookdev_rslightdome1 light_enable
+chkey -t 0 -v 0 -m 0 -a 0 -A 0 -T a  -F 'ch("light_enabled")' $_obj_rs_lookdev_rslightdome1/light_enable
+chblockend
+opset -S on $_obj_rs_lookdev_rslightdome1
+opparm -V 4 $_obj_rs_lookdev_rslightdome1 r ( 0 -90 0 ) env_map ( E:/Library/HDR/PolyHaven/studio_small_08_8k.exr )
+chautoscope $_obj_rs_lookdev_rslightdome1 +tx +ty +tz +rx +ry +rz +sx +sy +sz +dimmer
+opset -d on -r off -h off -f off -y off -t off -l off -s off -u off -F on -c on -e on -b off -x off $_obj_rs_lookdev_rslightdome1
+opexprlanguage -s hscript $_obj_rs_lookdev_rslightdome1
+opuserdata -n '___Version___' -v '4' $_obj_rs_lookdev_rslightdome1
+opuserdata -n '___toolcount___' -v '1' $_obj_rs_lookdev_rslightdome1
+opuserdata -n '___toolid___' -v 'object_pointlight' $_obj_rs_lookdev_rslightdome1
+opuserdata -n 'nodeshape' -v 'light' $_obj_rs_lookdev_rslightdome1
+opcf ..
+opcf $_obj_rs_lookdev
+oporder -e cyclorama1 refBalls1 rslightdome1 
+opcf ..
+opset -p on $_obj_rs_lookdev
+
+opcf $arg1
+opcf $_obj_rs_lookdev
+opcf ..
+
+set oidx = 0
+if ($argc >= 9 && "$arg9" != "") then
+    set oidx = $arg9
+endif
+
+if ($argc >= 5 && "$arg4" != "") then
+    set output = $_obj_rs_lookdev
+    opwire -n $output -$arg5 $arg4
+endif
+if ($argc >= 6 && "$arg6" != "") then
+    set input = $_obj_rs_lookdev
+    if ($arg8) then
+        opwire -n -i $arg6 -0 $input
+    else
+        opwire -n -o $oidx $arg6 -0 $input
+    endif
+endif
+opcf $saved_path
+'''
+hou.hscript(h_preamble + h_extra_args + h_cmd)
+]]></script>
+  </tool>
+
+  <tool name="collect" label="Collect hip" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[from LF import collect
+
+from imp import reload
+reload(collect)
+
+collect.run()
+]]></script>
+  </tool>
 </shelfDocument>
