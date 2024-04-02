@@ -135,8 +135,10 @@ parm_grp.set( " ".join(newdata) )
     <memberTool name="unusedMat"/>
     <memberTool name="subnet"/>
     <memberTool name="sel bbox"/>
-    <memberTool name="script"/>
     <memberTool name="collect"/>
+    <memberTool name="test"/>
+    <memberTool name="convPaint"/>
+    <memberTool name="fixAllPaths"/>
   </toolshelf>
 
   <tool name="fxcacheConvert" label="fxCache to Filecache" icon="SOP_file">
@@ -422,5 +424,82 @@ reload(collect)
 
 collect.run()
 ]]></script>
+  </tool>
+
+  <tool name="convPaint" label="Convert Manual Paint" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[def run():
+    selected_node = hou.selectedNodes()[0]
+    
+    # Check if the selected node is a SOP Attribute Paint node
+    if selected_node.type().name() != "attribpaint":
+        hou.ui.displayMessage("Please select a SOP Attribute Paint node.")
+        return
+    
+    # Get the painted attributes from the selected node
+    painted_attributes = "mask"#selected_node.paintedAttributes()
+    
+    # Check if any attributes are painted
+    if not painted_attributes:
+        hou.ui.displayMessage("No attributes are painted.")
+        return
+        
+    # first add blast with filter
+    blast = selected_node.parent().createNode("blast")
+    blast.setInput(0,selected_node)
+    blast.parm("grouptype").set("points")
+    blast.parm("group").set("@mask>0.001")
+    blast.parm("negate").set(True)    
+    
+    
+    # Get the geometry from the selected node
+    #geometry = selected_node.geometry()
+    geometry = blast.geometry()
+    
+    # Calculate the bounding box/sphere from the painted region
+    bbox = geometry.boundingBox()
+    center = bbox.center()
+    size = bbox.sizevec()
+    
+    box = None
+    # Create a new sphere/box primitive node
+    if True:
+        box = selected_node.parent().createNode("box")
+        box.parm("sizex").set(size.x())
+        box.parm("sizey").set(size.y())
+        box.parm("sizez").set(size.z())
+        box.parm("tx").set(center.x())
+        box.parm("ty").set(center.y())
+        box.parm("tz").set(center.z())    
+    else:
+        box = hou.node(selected_node.parent().path()).createNode("sphere")
+        box.parm("rad").set(max(size.length(), 0.01))
+    
+    # remove the temp blast
+    blast.destroy()
+    
+    # Position the primitive node adjacent to the paint node
+    box.move(hou.Vector2(selected_node.position().x() + 2, selected_node.position().y()))
+    
+    # Connect the paint node to the primitive node
+    input_node = selected_node.inputs()[0]
+    #box.setInput(0, input_node)
+    
+    # Select the primitive node
+    box.setCurrent(True)
+    
+    # next add group bbox or dist mask
+    method = "mask"
+    if method == "mask":
+        dist = box.parent().createNode("distancefromgeometry")
+        dist.parm("enableoutattrib").set(False)
+        dist.parm("enableoutmask").set(True)
+        dist.parm("rad").set(0)
+        dist.setInput(0, input_node)
+        dist.setInput(1, box)
+        dist.moveToGoodPosition()
+    
+    
+    
+run()]]></script>
   </tool>
 </shelfDocument>
