@@ -139,6 +139,7 @@ parm_grp.set( " ".join(newdata) )
     <memberTool name="test"/>
     <memberTool name="convPaint"/>
     <memberTool name="fixAllPaths"/>
+    <memberTool name="objectmerge"/>
   </toolshelf>
 
   <tool name="fxcacheConvert" label="fxCache to Filecache" icon="SOP_file">
@@ -501,5 +502,49 @@ collect.run()
     
     
 run()]]></script>
+  </tool>
+
+  <tool name="objectmerge" label="Object Merge" icon="PLASMA_App">
+    <script scriptType="python"><![CDATA[import hou
+
+network = hou.ui.curDesktop().paneTabOfType(hou.paneTabType.NetworkEditor)
+networkpath = network.pwd().path()
+opType = hou.node(networkpath).childTypeCategory().name()
+pos = network.cursorPosition()
+
+clipboard = hou.ui.getTextFromClipboard()
+
+n = 0
+
+if clipboard:
+    list = clipboard.split()
+    for item in list:
+        if hou.node(item) != None:
+            nodeType = hou.node(item).type().category().name()
+        
+            if opType == "Sop":
+                merge = hou.node(networkpath).createNode('object_merge','om_'+item.split('/')[-1])
+                merge.parm('objpath1').set(str(item))
+            elif opType == "Lop":
+                if nodeType == 'Lop':
+                    merge = hou.node(networkpath).createNode('fetch','om_'+item.split('/')[-1])
+                    merge.parm('loppath').set(str(item))
+                elif nodeType == 'Sop':
+                    merge = hou.node(networkpath).createNode('sopimport','om_'+item.split('/')[-1])
+                    merge.parm('soppath').set(str(item))
+            elif opType == "Driver":
+                if nodeType == "Driver":
+                    merge = hou.node(networkpath).createNode('fetch','om_'+item.split('/')[-1])
+                    merge.parm('source').set(str(item))
+                
+            
+            merge.setColor(hou.Color(0,0.35,0.7))
+            merge.setPosition(pos)
+            merge.move([n*2,0])
+            if n == 0:
+                merge.setSelected(True,True)
+            else:
+                merge.setSelected(True,False)
+            n = n + 1]]></script>
   </tool>
 </shelfDocument>

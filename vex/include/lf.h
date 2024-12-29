@@ -172,22 +172,22 @@ void swap ( int array [ ]; int left; int right )
     array [ left ] = temp;
 }
 
-void quickSort ( int array [ ] )
+function void quickSort ( int array [ ] )
 {
     int stack [ ];
     int pivot;
     int pivotIndex = 0;
     int leftIndex = pivotIndex + 1;
-    int rightIndex = arraylength ( array ) - 1;
+    int rightIndex = len ( array ) - 1;
     
     push ( stack, pivotIndex );
     push ( stack, rightIndex );
     
     int leftIndexOfSubSet, rightIndexOfSubset;
-    while ( arraylength ( stack ) > 0 )
+    while ( len ( stack ) > 0 )
     {
-        pop ( rightIndexOfSubset, stack );
-        pop ( leftIndexOfSubSet, stack );
+        rightIndexOfSubset = pop ( stack );
+        leftIndexOfSubSet  = pop ( stack );
         
         leftIndex = leftIndexOfSubSet + 1;
         pivotIndex = leftIndexOfSubSet;
