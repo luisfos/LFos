@@ -1,8 +1,21 @@
 # LFos
 
+>> 🧰 **Repository status**  
+> *Notice posted: 2026-01-28*
+>
+> This repository contains a collection of utilities that were last actively used around **2021**.
+> It is currently under maintenance and not actively developed.
+>
+> - Tools may rely on outdated APIs or workflows
+> - No guarantees of support or backward compatibility
+> - Changes may occur without notice
+>
+> The code remains available for reference or adaptation.
+
+
 A collection of useful HDAs, Tools and Scripts for SideFX Houdini.
 
-LFos is a collection of tools I've come to rely on and I'd like to share with the houdini community. It's inspired by other artist's and studio workflows, with some tools that have been iterated on for a few years now. Any asset that proves to be useful from a project I try to repurpose into a tool here. Work in progress assets are currently hidden from the tab menu.
+LFos is a collection of tools I've come to rely on and would like to share with the houdini community. It's inspired by other artist's and studio workflows, with some tools that have been iterated on for a few years now. Any asset that proves to be useful from a project I try to repurpose into a tool here. Work in progress assets are currently hidden from the tab menu.
 
 Feedback and Requests are very welcome.
 
@@ -47,3 +60,4 @@ Other useful stuff to check out:
 - https://github.com/toadstorm/MOPS
 - Cave Academy Props
 - https://www.tokeru.com/cgwiki/index.php?title=Houdini
+- https://luisfos.xyz/
